@@ -18,6 +18,12 @@ import { CashoutActionSchema } from "./schemas";
 
 const BASE_MAINNET = "base-mainnet";
 
+/**
+ * Adapts an AgentKit EVM wallet to the viem signer expected by the offramp SDK.
+ *
+ * @param walletProvider - AgentKit wallet connected to Base mainnet
+ * @returns A viem wallet client backed by the AgentKit wallet
+ */
 function toViemWalletClient(walletProvider: EvmWalletProvider) {
   return createWalletClient({
     account: walletProvider.toSigner(),
@@ -30,12 +36,17 @@ function toViemWalletClient(walletProvider: EvmWalletProvider) {
  * OfframpActionProvider exposes USDCtoFiat cash-out (Fast and Best) via @usdctofiat/offramp.
  */
 export class OfframpActionProvider extends ActionProvider<EvmWalletProvider> {
+  /** Creates the USDCtoFiat offramp action provider. */
   constructor() {
     super("offramp", []);
   }
 
   /**
    * Sell Base USDC for fiat through Galleon / USDCtoFiat (@usdctofiat/offramp).
+   *
+   * @param walletProvider - Wallet that signs and submits the cash-out transactions
+   * @param args - Required cash-out mode, amount, currency, platform, and payee
+   * @returns The serialized USDCtoFiat cash-out result
    */
   @CreateAction({
     name: "cashout",
@@ -80,6 +91,9 @@ export class OfframpActionProvider extends ActionProvider<EvmWalletProvider> {
 
   /**
    * Base mainnet only. USDCtoFiat cash-out is Base USDC.
+   *
+   * @param network - Network to check for support
+   * @returns Whether the network is Base mainnet
    */
   supportsNetwork(network: Network): boolean {
     return network.protocolFamily === "evm" && network.networkId === BASE_MAINNET;
@@ -88,5 +102,7 @@ export class OfframpActionProvider extends ActionProvider<EvmWalletProvider> {
 
 /**
  * Factory for OfframpActionProvider.
+ *
+ * @returns A new OfframpActionProvider instance
  */
 export const offrampActionProvider = () => new OfframpActionProvider();

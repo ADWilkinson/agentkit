@@ -10,14 +10,8 @@ export const CashoutActionSchema = z.object({
     .describe(
       "fast: live market pricing with 0% spread. best: Delegate-managed pricing with a 10 bps fee.",
     ),
-  amount: z
-    .string()
-    .min(1)
-    .describe("Human USDC amount to sell, for example \"100\"."),
-  currency: z
-    .string()
-    .min(1)
-    .describe("Fiat currency code, for example USD, EUR, or GBP."),
+  amount: z.string().min(1).describe('Human USDC amount to sell, for example "100".'),
+  currency: z.string().min(1).describe("Fiat currency code, for example USD, EUR, or GBP."),
   platform: z
     .string()
     .min(1)
